@@ -9,7 +9,6 @@ class Keep2Anki {
   constructor() {
     this.cards = [];
     this.processDirectory(directoryPath).then(() => {
-      // console.log(this.cards); // Log cards after they've been processed
       const apkg = new AnkiExport(
         "keep2anki",
         "A package from Google Keep notes."
@@ -41,7 +40,6 @@ class Keep2Anki {
     ) {
       return;
     }
-    // console.log(jsonData.title);
     const title = jsonData.title;
     let content = jsonData.textContent;
     content = content.replace(
@@ -57,10 +55,8 @@ class Keep2Anki {
       new RegExp("This text.*livio.pack.lang.en_US", "gms"),
       ""
     );
-    console.log(content);
     content = content.replace(/\n/gm, "<br>");
-    content = `<p>${content}</p>`;
-    // console.log(content);
+    content = `<p align="left">${content}</p>`;
     this.cards.push({ content, title });
   }
   async processFile(file) {
