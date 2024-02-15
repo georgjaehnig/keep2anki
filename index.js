@@ -6,11 +6,11 @@ const directoryPath = "./Keep";
 const AnkiExport = require("anki-apkg-export").default;
 
 class Keep2Anki {
-  constructor() {
+  constructor(options) {
     this.cards = [];
     this.processDirectory(directoryPath).then(() => {
       const apkg = new AnkiExport(
-        "keep2anki",
+        options.deckName,
         "A package from Google Keep notes."
       );
       for (let card of this.cards) {
@@ -84,4 +84,11 @@ class Keep2Anki {
   }
 }
 
-new Keep2Anki();
+const args = process.argv.slice(2);
+const options = { deckName: "keep2anki" };
+
+if (args.length > 0) {
+  options.deckName = args[0];
+}
+
+new Keep2Anki(options);
