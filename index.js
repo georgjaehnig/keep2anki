@@ -6,8 +6,16 @@ class Keep2Anki {
   constructor() {
     this.cards = [];
     this.processDirectory(directoryPath).then(() => {
-      console.log(this.cards); // Log cards after they've been processed
+      // console.log(this.cards); // Log cards after they've been processed
+      this.writeCardsToCSV();
     });
+  }
+
+  writeCardsToCSV() {
+    const csv = this.cards.map((card) => {
+      return `${card.title}\t${card.content}`;
+    });
+    fs.writeFile("output.csv", csv.join("\n"), "utf8");
   }
 
   processData(jsonData) {
