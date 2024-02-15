@@ -1,21 +1,30 @@
 const fs = require("fs").promises; // Use the Promise-based version of fs
+const fsSync = require("fs");
+
 const path = require("path");
 const directoryPath = "./Keep";
+const AnkiExport = require("anki-apkg-export").default;
 
 class Keep2Anki {
   constructor() {
     this.cards = [];
     this.processDirectory(directoryPath).then(() => {
       // console.log(this.cards); // Log cards after they've been processed
-      this.writeCardsToCSV();
+      const apkg = new AnkiExport(
+        "keep2anki",
+        "A package from Google Keep notes."
+      );
+      for (let card of this.cards) {
+        apkg.addCard(card.content, card.title);
+      }
+      apkg
+        .save()
+        .then((zip) => {
+          fsSync.writeFileSync("./output.apkg", zip, "binary");
+          console.log(`Package has been generated: output.pkg`);
+        })
+        .catch((err) => console.log(err.stack || err));
     });
-  }
-
-  writeCardsToCSV() {
-    const csv = this.cards.map((card) => {
-      return `${card.title}\t${card.content}`;
-    });
-    fs.writeFile("output.csv", csv.join("\n"), "utf8");
   }
 
   processData(jsonData) {
@@ -35,12 +44,22 @@ class Keep2Anki {
     // console.log(jsonData.title);
     const title = jsonData.title;
     let content = jsonData.textContent;
-    // replace all occurences of title in content with 3 black blocks
+    content = content.replace(
+      `${title} (http://en.wiktionary.org/wiki/${title})\n`,
+      ""
+    );
     content = content.replace(new RegExp(title, "g"), "■■■");
     content = content.replace(
       /^(Etymology|Pronunciation)\n(?:\n)?((?:.+\n?)+)\n/gm,
       ""
     );
+    content = content.replace(
+      new RegExp("This text.*livio.pack.lang.en_US", "gms"),
+      ""
+    );
+    console.log(content);
+    content = content.replace(/\n/gm, "<br>");
+    content = `<p>${content}</p>`;
     // console.log(content);
     this.cards.push({ content, title });
   }
