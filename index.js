@@ -1,7 +1,6 @@
+const { dir } = require("console");
 const fs = require("fs");
 const path = require("path");
-
-const directoryPath = "./Keep";
 
 const processFile = (file) => {
   if (path.extname(file) === ".json") {
@@ -42,11 +41,20 @@ const processFile = (file) => {
   }
 };
 
-fs.readdir(directoryPath, (err, files) => {
-  if (err) {
-    console.error("Error reading directory:", err);
-    return;
-  }
+const processDirectory = (directoryPath) => {
+  fs.readdir(directoryPath, (err, files) => {
+    if (err) {
+      console.error("Error reading directory:", err);
+      return;
+    }
 
-  files.forEach(processFile);
-});
+    files.forEach(processFile);
+  });
+};
+
+const main = () => {
+  const directoryPath = "./Keep";
+  processDirectory(directoryPath);
+};
+
+main();
