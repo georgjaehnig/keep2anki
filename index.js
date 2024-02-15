@@ -1,12 +1,13 @@
-const fs = require("fs");
+const fs = require("fs").promises; // Use the Promise-based version of fs
 const path = require("path");
 const directoryPath = "./Keep";
 
 class Keep2Anki {
   constructor() {
     this.cards = [];
-    this.processDirectory(directoryPath);
-    console.log(this.cards);
+    this.processDirectory(directoryPath).then(() => {
+      console.log(this.cards); // Log cards after they've been processed
+    });
   }
 
   processData(jsonData) {
@@ -35,33 +36,28 @@ class Keep2Anki {
     // console.log(content);
     this.cards.push({ content, title });
   }
-
-  processFile(file) {
+  async processFile(file) {
     if (path.extname(file) === ".json") {
       const filePath = path.join(directoryPath, file);
-      fs.readFile(filePath, "utf8", (err, data) => {
-        if (err) {
-          console.error("Error reading file:", err);
-          return;
-        }
-        try {
-          const jsonData = JSON.parse(data);
-          this.processData(jsonData);
-        } catch (error) {
-          console.error("Error parsing JSON:", error);
-        }
-      });
+      try {
+        const data = await fs.readFile(filePath, "utf8");
+        const jsonData = JSON.parse(data);
+        this.processData(jsonData);
+      } catch (error) {
+        console.error("Error reading or parsing file:", error);
+      }
     }
   }
 
-  processDirectory(directoryPath) {
-    fs.readdir(directoryPath, (err, files) => {
-      if (err) {
-        console.error("Error reading directory:", err);
-        return;
+  async processDirectory(directoryPath) {
+    try {
+      const files = await fs.readdir(directoryPath);
+      for (let file of files) {
+        await this.processFile(file); // Wait for each file to be processed
       }
-      files.forEach((file) => this.processFile(file));
-    });
+    } catch (err) {
+      console.error("Error reading directory:", err);
+    }
   }
 }
 
