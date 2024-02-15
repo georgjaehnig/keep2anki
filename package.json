@@ -7,5 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Georg Jaehnig",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "anki-apkg-export": "^4.0.3"
+  }
 }
