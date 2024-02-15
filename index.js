@@ -57,7 +57,7 @@ class Keep2Anki {
     );
     content = content.replace(/\n/gm, "<br>");
     content = `<p align="left">${content}</p>`;
-    console.log(content);
+    // console.log(content);
     this.cards.push({ content, title });
   }
   async processFile(file) {
