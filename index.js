@@ -43,12 +43,12 @@ class Keep2Anki {
     const title = jsonData.title;
     let content = jsonData.textContent;
     content = content.replace(
-      `${title} (http://en.wiktionary.org/wiki/${title})\n`,
+      new RegExp(`${title} \\(http://en\\.wiktionary\\.org/wiki/.*\\)\n`, "g"),
       ""
     );
     content = content.replace(new RegExp(title, "g"), "■■■");
     content = content.replace(
-      /^(Etymology|Pronunciation)\n(?:\n)?((?:.+\n?)+)\n/gm,
+      /^(Etymology(?: \d)?|Pronunciation)\n(?:\n)?((?:.+\n?)+)\n/gm,
       ""
     );
     content = content.replace(
@@ -57,6 +57,7 @@ class Keep2Anki {
     );
     content = content.replace(/\n/gm, "<br>");
     content = `<p align="left">${content}</p>`;
+    console.log(content);
     this.cards.push({ content, title });
   }
   async processFile(file) {
